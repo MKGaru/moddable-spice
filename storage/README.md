@@ -13,7 +13,7 @@ add include to manifest.json
 "$(MODDABLE)/../spice/storage/manifest.json"
 ```
 
-*** usage for default namespace.
+### usage for default namespace.
 ```javascript
 import localStorage from 'spice/storage'
 
@@ -21,7 +21,7 @@ localStorage.setItem('key', 'value')
 localStorage.getItem('key')
 localStorage.removeItem('key')
 ```
-*** usage for custom namespace.
+### usage for custom namespace.
 ```javascript
 import { Storage } from 'spice/storage'
 const userStorage = new Storage('user')
