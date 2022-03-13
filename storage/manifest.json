@@ -4,6 +4,6 @@
 	],
 	"modules": {
 		"*": [],
-    "spice/storage": "./storage"
+		"spice/storage": "./storage"
 	}
 }
