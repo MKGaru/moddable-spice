@@ -3,7 +3,7 @@ spice/storage
 
 A drop-in substitute for the browser native localStorage API that runs on moddable.
 
-inspired by node-localstorage.
+inspired by [node-localstorage](https://github.com/lmaccherone/node-localstorage).
 
 Usage
 ----------------
