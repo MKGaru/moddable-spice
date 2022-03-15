@@ -53,6 +53,7 @@ type Euler = {
 
 const Register = Object.freeze({
 	XA_OFFS: 0x06,
+	XG_OFFS: 0x13,
 
 	SMPLRT_DIV: 0x19,
 	CONFIG: 0x1A,
@@ -783,8 +784,51 @@ class GyroAccelerometer {
 		this.#io.writeBits(Register.CONFIG, 2, 3, Math.max(0, Math.min(7, filterConfig)) as Bits<3>)
 	}
 
-	// todo set offset 852 - 965
+	set offsets(
+		[xAccelOffset, yAccelOffset, zAccelOffset, 
+		xGyroOffset, yGyroOffset, zGyroOffset]: [
+			number, number, number,
+			number, number, number,
+		]
+	) {
+		const buffer = new ArrayBuffer(2 * 3)
+		const data = new DataView(buffer)
+		
+		data.setInt16(0, xAccelOffset, false)
+		data.setInt16(2, yAccelOffset, false)
+		data.setInt16(4, zAccelOffset, false)
+		this.#io.writeBlock(Register.XA_OFFS, buffer)
 
+		data.setInt16(0, xGyroOffset, false)
+		data.setInt16(2, yGyroOffset, false)
+		data.setInt16(4, zGyroOffset, false)
+		this.#io.writeBlock(Register.XG_OFFS, buffer)
+	}
+
+	get offsets() {
+		const offsetRegister = this.deviceID < 0x38 ? Register.XA_OFFS : 0x77
+		const data = [0,0,0,0,0,0] as [number, number, number, number, number, number]
+	
+		if (offsetRegister === Register.XA_OFFS)	{
+			const buf = this.#io.readBlock(offsetRegister, 6)
+			const view = new DataView(buf)
+			data[0] = view.getInt16(0, false)
+			data[1] = view.getInt16(2, false)
+			data[2] = view.getInt16(4, false)
+		} else {
+			data[0] = this.#io.readWord(offsetRegister, true)
+			data[1] = this.#io.readWord(offsetRegister + 3, true)
+			data[2] = this.#io.readWord(offsetRegister + 6, true)
+		}
+		
+		const buf = this.#io.readBlock(Register.XG_OFFS, 6)
+		const view = new DataView(buf)
+		data[3] = view.getInt16(0, false)
+		data[4] = view.getInt16(2, false)
+		data[5] = view.getInt16(4, false)
+		return data
+	}
+	
 	/**
 	 * Access the DMP enable/disable status.
 	 * @returns true when enabled; false otherwise.
@@ -1184,27 +1228,7 @@ class GyroAccelerometer {
 	}
 
 	printActiveOffsets() {
-		const offsetRegister = this.deviceID < 0x38 ? Register.XA_OFFS : 0x77
-		const data = Int16Array.from([0,0,0,0,0,0]);
-	
-		if (offsetRegister === Register.XA_OFFS)	{
-			const buf = this.#io.readBlock(offsetRegister, 6)
-			const view = new DataView(buf)
-			data[0] = view.getUint16(0, false)
-			data[1] = view.getUint16(2, false)
-			data[2] = view.getUint16(4, false)
-		} else {
-			data[0] = this.#io.readWord(offsetRegister, true)
-			data[1] = this.#io.readWord(offsetRegister + 3, true)
-			data[2] = this.#io.readWord(offsetRegister + 6, true)
-		}
-		//	A_OFFSET_H_READ_A_OFFS(Data);
-		// this.i2cHelper.readWords(0x13, 3, (uint16_t *)Data);
-		const buf = this.#io.readBlock(0x13, 6)
-		const view = new DataView(buf)
-		data[3] = view.getUint16(0, false)
-		data[4] = view.getUint16(2, false)
-		data[5] = view.getUint16(4, false)
+		const data = this.offsets
 		
 		trace('           X Accel  Y Accel  Z Accel   X Gyro   Y Gyro   Z Gyro', '\n')
 		trace('OFFSETS  ')
