@@ -6,6 +6,10 @@ My utility collections for moddable sdk
 <br>
 <br>
 
+Required
+-------------------------------
+* [moddable-types](https://github.com/MKGaru/moddable-types) for prevent build error with typescript.
+
 Usage
 -------------------------------
 
