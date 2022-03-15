@@ -1,0 +1,12 @@
+
+{
+	"build": {
+		"IO": "$(MODDABLE)/modules/io"
+  },
+	"modules": {
+		"*": [],
+    "embedded:io/i2c": "$(IO)/i2c/_i2c",
+
+		"spice/drivers/mcp4725": "./mcp4725"
+	}
+}
