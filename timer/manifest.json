@@ -1,0 +1,14 @@
+{
+  "build": {
+		"IO": "$(MODDABLE)/modules/io"
+  },
+	"modules": {
+		"*": [
+      "$(MODDABLE)/modules/base/timer/*"
+    ],
+		"spice/timer": "./timer"
+	},
+  "preload": [
+    "timer"
+  ]
+}
