@@ -40,7 +40,7 @@ System.setInterval(() => {
 }, 100)
 ```
 
-### usage with dmp
+### usage with dmp and interrupt
 ```javascript
 trace('\n', 'DMP initialize...', '\n')
 imu.dmpInitialize()
@@ -56,4 +56,25 @@ imu.interruptWatch(23/* interrupt gpio pin number */, () => {
 })
 
 
+```
+
+### or usage with dmp and polling (wihtout interrupt pin)
+```javascript
+imu.dmpEnabled = true
+System.setInterval(async () => {
+    try {
+        await imu.dmpGetCurrentFIFOPacket()
+        const gravity = imu.dmpGravity
+        const {pitch, yaw, roll} = imu.dmpYawPitchRoll(gravity, true)
+        const format = (v: number) => (v|0).toString().padStart(5)
+        trace(
+        	' pitch: ', format(pitch), 
+        	' yaw: ',   format(yaw), 
+        	' roll: ',  format(roll),
+        	'\n'
+        )
+    } catch (e) {
+        trace(e)
+    }
+}
 ```

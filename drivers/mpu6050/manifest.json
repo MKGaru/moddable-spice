@@ -3,7 +3,8 @@
 		"IO": "$(MODDABLE)/modules/io"
   },
 	"include": [
-		"$(MODDABLE)/../spice/io/smbus/manifest.json"
+		"$(MODDABLE)/../spice/io/smbus/manifest.json",
+		"$(MODDABLE)/../spice/timer/manifest.json"
 	],
 	"modules": {
 		"*": [],

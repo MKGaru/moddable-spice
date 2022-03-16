@@ -26,6 +26,7 @@ import { SMBusOptions } from 'embedded:io/smbus'
 import SMBus, { type Byte, type Bit, type Bits } from 'spice/io/smbus'
 import Resource from 'Resource'
 import Timer from 'timer'
+import SystemTimer from 'spice/timer'
 
 type PartialOptions<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>
 export interface GyroAccelerometerOptions extends SMBusOptions {
@@ -992,7 +993,7 @@ class GyroAccelerometer {
 					fifoC = 0
 					// eslint-disable-next-line no-cond-assign
 					while (!(fifoC = this.fifoCount) && ((Date.now() - breakTimer) <= 11000)) {
-						await new Promise(res => System.setTimeout(res, 0))
+						await new Promise(res => SystemTimer.setTimeout(res, 0))
 					} // Get Next New Packet
 
 				} else { // We have more than 1 packet but less than 200 bytes of data in the FIFO Buffer
@@ -1208,7 +1209,7 @@ class GyroAccelerometer {
 				}
 				if((eSum * ((readAddress === 0x3B) ? 0.05 : 1)) < 5) eSample++  // Successfully found offsets prepare to advance
 				if((eSum < 100) && (c > 10) && (eSample >= 10)) break  // Advance to next Loop
-				await new Promise(res => System.setTimeout(res, 1))
+				await new Promise(res => SystemTimer.setTimeout(res, 1))
 			}
 			if (enableOutput) trace('.', '\n')
 			kP *= .75
