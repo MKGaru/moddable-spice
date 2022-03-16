@@ -60,6 +60,8 @@ imu.interruptWatch(23/* interrupt gpio pin number */, () => {
 
 ### or usage with dmp and polling (wihtout interrupt pin)
 ```javascript
+trace('\n', 'DMP initialize...', '\n')
+imu.dmpInitialize()
 imu.dmpEnabled = true
 System.setInterval(async () => {
     try {
