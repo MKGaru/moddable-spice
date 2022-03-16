@@ -124,6 +124,7 @@ class GyroAccelerometer {
 	}
 	#memory: ArrayBuffer
 	#dmpMemory: ArrayBuffer
+	#localYawOffset: number = 0
 
 	constructor(_options: PartialOptions<GyroAccelerometerOptions, 'address'>) {
 		const options: GyroAccelerometerOptions = Object.assign({
@@ -1076,6 +1077,11 @@ class GyroAccelerometer {
 			z: 0
 		});
 	}
+
+	resetYaw() {
+		const q = this.dmpQuaternion
+		this.#localYawOffset = -Math.atan2(2 * q.x * q.y - 2 * q.w * q.z,  2 * q.w * q.w + 2 * q.x * q.x - 1);
+	}
 	
 	/**
 	 * Compute the yaw, roll and pitch from the DMP quaternion and gravity vector.
@@ -1086,7 +1092,7 @@ class GyroAccelerometer {
 	dmpYawPitchRoll(gravity: Vector3, degree = false) {
 		const q = this.dmpQuaternion
 		// yaw: (about Z axis)
-		let yaw = Math.atan2(2 * q.x * q.y - 2 * q.w * q.z,  2 * q.w * q.w + 2 * q.x * q.x - 1);
+		let yaw = Math.atan2(2 * q.x * q.y - 2 * q.w * q.z,  2 * q.w * q.w + 2 * q.x * q.x - 1) + this.#localYawOffset;
 	
 		// pitch: (nose up/down, about Y axis)
 		let pitch = Math.atan2(gravity.x , Math.sqrt(gravity.y * gravity.y + gravity.z * gravity.z));
