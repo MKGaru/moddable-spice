@@ -24,7 +24,7 @@ class CustomDeviceDriver {
     }
 
     get deviceID() {
-		return this.#io.readBits(Register.WHO_AM_I, 6, 6)
-	}
+        return this.#io.readBits(Register.WHO_AM_I, 6, 6)
+    }
 }
 ```
