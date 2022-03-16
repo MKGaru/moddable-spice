@@ -1,5 +1,6 @@
 spice/drivers/mpu6050
 ================
+<img src="https://user-images.githubusercontent.com/6237028/158561260-bfe86d22-b308-43cd-8a2d-b90ca481f539.png" align="right">
 
 6-axis IMU driver.
 
