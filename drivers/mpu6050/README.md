@@ -68,10 +68,10 @@ System.setInterval(async () => {
         const {pitch, yaw, roll} = imu.dmpYawPitchRoll(gravity, true)
         const format = (v: number) => (v|0).toString().padStart(5)
         trace(
-        	' pitch: ', format(pitch), 
-        	' yaw: ',   format(yaw), 
-        	' roll: ',  format(roll),
-        	'\n'
+            ' pitch: ', format(pitch), 
+            ' yaw: ',   format(yaw), 
+            ' roll: ',  format(roll),
+            '\n'
         )
     } catch (e) {
         trace(e)
