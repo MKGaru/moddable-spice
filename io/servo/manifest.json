@@ -1,0 +1,11 @@
+{
+  "build": {
+		"IO": "$(MODDABLE)/modules/io"
+  },
+	"modules": {
+		"*": [],
+    "embedded:io/pwm": "$(IO)/i2c/_i2c",
+    
+		"spice/io/servo": "./servo"
+	}
+}
