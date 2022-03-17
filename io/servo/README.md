@@ -44,4 +44,3 @@ new Servo({
   offset: 0, // offset angle degree
 })
 ```
-
