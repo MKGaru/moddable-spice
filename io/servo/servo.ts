@@ -20,11 +20,15 @@ class Servo {
 
 	#minAngle: number
 	#offsetAngle: number
+	/** angle to pulse widh (msec) scale */
 	#scale: number
-	#minPulse: number
-	#rate:number
+	/** pulse width to range scale */
+	#range: number
 
-	constructor(descriptor: ServoOptions) {
+	#minPulse: number
+
+	constructor(descriptor: number|ServoOptions) {
+		if (typeof descriptor == 'number') descriptor = { pin: descriptor }
 		this.#value = descriptor.default || 0
 		const option = {
 			pin: descriptor.pin,
@@ -62,13 +66,12 @@ class Servo {
 			pin: option.pin,
 			hz: 50,
 		})
-		const rate = 20000 / 3000 // (20ms = 20,000us) / 3000 = 6.6us 
 
-		this.#minAngle = maxAngle
+		this.#minAngle = minAngle
 		this.#offsetAngle = offsetAngle
 		this.#scale = scale
 		this.#minPulse = minPulse
-		this.#rate = rate
+		this.#range =  (this.#io.hz / 1_000_000 ) * (2 ** this.#io.resolution - 1)
 	}
 
 	read() {
@@ -76,9 +79,10 @@ class Servo {
 	}
 
 	write(val: number) {
-		this.#io.write(((((val - this.#minAngle + this.#offsetAngle) * this.#scale) + this.#minPulse) / /*this.#rate*/1) | 0)
+		this.#value = val
+		this.#io.write((((val - this.#minAngle + this.#offsetAngle) * this.#scale) + this.#minPulse) * this.#range)
 	}
 }
 
-Object.freeze(Servo)
+Object.freeze(Servo.prototype)
 export default Servo
