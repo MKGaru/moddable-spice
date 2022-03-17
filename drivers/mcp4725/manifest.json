@@ -1,12 +1,15 @@
 
 {
-	"build": {
-		"IO": "$(MODDABLE)/modules/io"
+  "build": {
+    "IO": "$(MODDABLE)/modules/io"
   },
-	"modules": {
-		"*": [],
+  "modules": {
+    "*": [],
     "embedded:io/i2c": "$(IO)/i2c/_i2c",
 
-		"spice/drivers/mcp4725": "./mcp4725"
-	}
+    "spice/drivers/mcp4725": "./mcp4725"
+  },
+  "preload": [
+    "spice/drivers/mcp4725"
+  ]
 }

@@ -1,12 +1,15 @@
 {
   "build": {
-		"IO": "$(MODDABLE)/modules/io"
+    "IO": "$(MODDABLE)/modules/io"
   },
-	"modules": {
-		"*": [],
+  "modules": {
+    "*": [],
     "embedded:io/i2c": "$(IO)/i2c/_i2c",
     "embedded:io/smbus": "$(IO)/i2c/smbus",
     
-		"spice/io/smbus": "./smbus"
-	}
+    "spice/io/smbus": "./smbus"
+  },
+  "preload": [
+    "spice/io/smbus"
+  ]
 }

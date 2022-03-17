@@ -1,24 +1,24 @@
 {
-	"build": {
-		"IO": "$(MODDABLE)/modules/io"
+  "build": {
+    "IO": "$(MODDABLE)/modules/io"
   },
-	"include": [
-		"$(MODDABLE)/../spice/io/smbus/manifest.json",
-		"$(MODDABLE)/../spice/timer/manifest.json"
-	],
-	"modules": {
-		"*": [],
-		"embedded:io/digitalbank": "$(IO)/digital/digitalbank",
-		"embedded:io/digital": "$(IO)/digital/digital",
-		
-		"spice/drivers/mpu6050": "./mpu6050"
-	},
-	"preload": [
-		"spice/drivers/mpu6050"
-	],
-	"data": {
-		"*": [
-			"./DMP"
-		]
-	}
+  "include": [
+    "$(MODDABLE)/../spice/io/smbus/manifest.json",
+    "$(MODDABLE)/../spice/timer/manifest.json"
+  ],
+  "modules": {
+    "*": [],
+    "embedded:io/digitalbank": "$(IO)/digital/digitalbank",
+    "embedded:io/digital": "$(IO)/digital/digital",
+    
+    "spice/drivers/mpu6050": "./mpu6050"
+  },
+  "preload": [
+    "spice/drivers/mpu6050"
+  ],
+  "data": {
+    "*": [
+      "./DMP"
+    ]
+  }
 }

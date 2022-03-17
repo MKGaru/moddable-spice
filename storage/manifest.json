@@ -1,9 +1,12 @@
 {
-	"include": [
-		"$(MODDABLE)/modules/files/file/manifest.json"
-	],
-	"modules": {
-		"*": [],
-		"spice/storage": "./storage"
-	}
+  "include": [
+    "$(MODDABLE)/modules/files/file/manifest.json"
+  ],
+  "modules": {
+    "*": [],
+    "spice/storage": "./storage"
+  },
+  "preload": [
+    "spice/storage"
+  ]
 }

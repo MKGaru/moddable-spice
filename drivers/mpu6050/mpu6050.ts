@@ -1115,11 +1115,11 @@ class GyroAccelerometer {
 			roll *= RAD_TO_DEG
 		}
 	
-		return {
+		return Object.freeze({
 			roll,
 			pitch,
 			yaw
-		}
+		})
 	}
 	
 	/**
@@ -1287,5 +1287,5 @@ class GyroAccelerometer {
 }
 
 Object.freeze(GyroAccelerometer)
-
+Object.freeze(GyroAccelerometer.prototype)
 export default GyroAccelerometer

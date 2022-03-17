@@ -36,5 +36,5 @@ class MCP4725 {
 	}
 }
 Object.freeze(MCP4725)
-
+Object.freeze(MCP4725.prototype)
 export default MCP4725

@@ -82,7 +82,11 @@ class Servo {
 		this.#value = val
 		this.#io.write((((val - this.#minAngle + this.#offsetAngle) * this.#scale) + this.#minPulse) * this.#range)
 	}
-}
 
+	close() {
+		this.#io.close()
+	}
+}
+Object.freeze(Servo)
 Object.freeze(Servo.prototype)
 export default Servo

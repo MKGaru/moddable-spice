@@ -1,11 +1,14 @@
 {
   "build": {
-		"IO": "$(MODDABLE)/modules/io"
+    "IO": "$(MODDABLE)/modules/io"
   },
-	"modules": {
-		"*": [],
+  "modules": {
+    "*": [],
     "embedded:io/pwm": "$(IO)/i2c/_i2c",
     
-		"spice/io/servo": "./servo"
-	}
+    "spice/io/servo": "./servo"
+  },
+  "preload": [
+    "spice/io/servo"
+  ]
 }

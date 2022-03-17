@@ -91,4 +91,5 @@ class SMBus<Register extends number = number> extends EmbeddedSMBus {
 }
 
 Object.freeze(SMBus)
+Object.freeze(SMBus.prototype)
 export default SMBus

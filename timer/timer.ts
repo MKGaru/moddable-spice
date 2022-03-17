@@ -15,4 +15,5 @@ class SystemTimer {
 	}
 }
 Object.freeze(SystemTimer)
+Object.freeze(SystemTimer.prototype)
 export default SystemTimer

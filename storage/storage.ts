@@ -38,4 +38,5 @@ export class Storage {
 	}
 }
 Object.freeze(Storage)
+Object.freeze(Storage.prototype)
 export default new Storage()
