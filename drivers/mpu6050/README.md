@@ -79,5 +79,5 @@ System.setInterval(async () => {
     } catch (e) {
         trace(e)
     }
-}, 2)
+}, 50)
 ```

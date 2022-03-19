@@ -1071,10 +1071,9 @@ class GyroAccelerometer {
 	get dmpEuler(): Readonly<Euler> {
 		const q = this.dmpQuaternion
 		return Object.freeze({
-			x: Math.atan2(2 * q.x * q.y - 2 * q.w * q.z, 2 * q.w * q.w + 2 * q.x * q.x - 1)   // psi or x
-			-Math.asin(2 * q.x * q.z + 2 * q.w * q.y),                                     // theta or y
-			y: Math.atan2(2 * q.y * q.z - 2 * q.w * q.x, 2 * q.w * q.w + 2 * q.z * q.z - 1),   // phi or z
-			z: 0
+			x: Math.atan2(2 * q.x * q.y - 2 * q.w * q.z, 2 * q.w * q.w + 2 * q.x * q.x - 1),   // psi or x
+			y: -Math.asin(2 * q.x * q.z + 2 * q.w * q.y),                                      // theta or y
+			z: Math.atan2(2 * q.y * q.z - 2 * q.w * q.x, 2 * q.w * q.w + 2 * q.z * q.z - 1),   // phi or z
 		});
 	}
 
@@ -1089,13 +1088,36 @@ class GyroAccelerometer {
 	 * @param [degree] - convert radian to degree
 	 * @returns The roll, yaw and pitch
 	 */
+	 dmpYawPitchRollLegacy(gravity: Vector3, degree = false) {
+		const q = this.dmpQuaternion
+		let yaw = Math.atan2(2 * q.x * q.y - 2 * q.w * q.z, 2 * q.w ** 2 + 2 * q.x ** 2 - 1)
+		let pitch = Math.atan(gravity.x / Math.sqrt(gravity.y ** 2 + gravity.z ** 2))
+		let roll = Math.atan(gravity.y / Math.sqrt(gravity.x ** 2 + gravity.z ** 2))
+		if (degree) {
+			yaw *= RAD_TO_DEG
+			pitch *= RAD_TO_DEG
+			roll *= RAD_TO_DEG
+		}
+		return {
+			yaw,
+			pitch,
+			roll,
+		}
+	 }
+
+	/**
+	 * Compute the yaw, roll and pitch from the DMP quaternion and gravity vector.
+	 * @param gravity - The gravity vector
+	 * @param [degree] - convert radian to degree
+	 * @returns The roll, yaw and pitch
+	 */
 	dmpYawPitchRoll(gravity: Vector3, degree = false) {
 		const q = this.dmpQuaternion
 		// yaw: (about Z axis)
 		let yaw = Math.atan2(2 * q.x * q.y - 2 * q.w * q.z,  2 * q.w * q.w + 2 * q.x * q.x - 1) + this.#localYawOffset;
 	
 		// pitch: (nose up/down, about Y axis)
-		let pitch = Math.atan2(gravity.x , Math.sqrt(gravity.y * gravity.y + gravity.z * gravity.z));
+		let pitch = Math.atan2(gravity.x , Math.sqrt(gravity.y ** 2 + gravity.z ** 2));
 	
 		// roll: (tilt left/right, about X axis)
 		let roll = Math.atan2(gravity.y , gravity.z);
