@@ -28,6 +28,14 @@ type AvailableLength<Position extends BitPos> =
 	never
 
 class SMBus<Register extends number = number> extends EmbeddedSMBus {
+	readByte(regAddr: Register): Byte {
+		return this.readUint8(regAddr) as Byte
+	}
+
+	writeByte(regAddr: Register, byte: Byte) {
+		return this.writeUint8(regAddr, byte)
+	}
+
 	/** Read a single bit from an 8-bit device register.
 	 * @param regAddr Register regAddr to read from
 	 * @param bitNum Bit position to read (0-7)
@@ -87,6 +95,21 @@ class SMBus<Register extends number = number> extends EmbeddedSMBus {
 		b &= ~(mask) // zero all important bits in existing byte
 		b |= data // combine data with existing byte
 		this.writeByte(regAddr, b as Byte)
+	}
+}
+
+// tc53 compatible
+// As of 2022Q3, there is a gap between the type and implementation of embedded:io/smbus, 
+// the typing is TC53 compliant,
+// but the implementation is legacy.
+// if imlementation is legacy, remove overwrite.
+{
+	if ('readByte' in EmbeddedSMBus.prototype) {
+		delete SMBus.prototype.readByte
+	}
+
+	if ('writeByte' in EmbeddedSMBus.prototype) {
+		delete SMBus.prototype.writeByte
 	}
 }
 

@@ -84,6 +84,7 @@ class Servo {
 	}
 
 	close() {
+		// @ts-expect-error :  close method does not define in typings
 		this.#io.close()
 	}
 }
