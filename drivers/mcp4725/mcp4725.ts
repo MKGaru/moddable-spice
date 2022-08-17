@@ -32,6 +32,7 @@ class MCP4725 {
 	}
 
 	close() {
+		// @ts-expect-error :  close method does not define in typings
 		this.#io.close()
 	}
 }

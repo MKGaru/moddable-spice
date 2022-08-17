@@ -1,0 +1,19 @@
+{
+    "build": {
+      "IO": "$(MODDABLE)/modules/io"
+    },
+    "include": [
+      "$(MODDABLE)/../spice/io/smbus/manifest.json"
+    ],
+    "modules": {
+      "*": [],
+      "embedded:io/digitalbank": "$(IO)/digital/digitalbank",
+      "embedded:io/digital": "$(IO)/digital/digital",
+      
+      "spice/drivers/pca9685": "./pca9685"
+    },
+    "preload": [
+      "spice/drivers/pca9685"
+    ]
+  }
+  
