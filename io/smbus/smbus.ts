@@ -1,4 +1,5 @@
 import EmbeddedSMBus from 'embedded:io/smbus'
+import { Buffer } from 'embedded:io/_common'
 
 type BitPos = 0|1|2|3|4|5|6|7
 type BitLength = 1|2|3|4|5|6|7|8
@@ -28,12 +29,35 @@ type AvailableLength<Position extends BitPos> =
 	never
 
 class SMBus<Register extends number = number> extends EmbeddedSMBus {
-	readByte(regAddr: Register): Byte {
+	// ECMA-419 -- io compatible
+
+	readByte(regAddr: Register|number): Byte {
 		return this.readUint8(regAddr) as Byte
 	}
 
-	writeByte(regAddr: Register, byte: Byte) {
+	writeByte(regAddr: Register|number, byte: Byte) {
 		return this.writeUint8(regAddr, byte)
+	}
+
+	readWord(regAddr: Register|number, bigEndian?: boolean) {
+		return this.readUint16(regAddr, bigEndian)
+	}
+
+	writeWord(regAddr: Register|number, value: number, bigEndian?: boolean) {
+		return this.writeUint16(regAddr, value, bigEndian)
+	}
+
+	readBlock(regAddr: Register|number, byteLength: number|ArrayBuffer) {
+		if (typeof byteLength == 'number') {
+			return this.readBuffer(regAddr, byteLength)
+		} else {
+			this.readBuffer(regAddr, byteLength)
+			return byteLength
+		}
+	}
+
+	writeBlock(regAddr: Register|number, buffer: Buffer) {
+		return this.writeBuffer(regAddr, buffer)
 	}
 
 	/** Read a single bit from an 8-bit device register.
@@ -110,6 +134,22 @@ class SMBus<Register extends number = number> extends EmbeddedSMBus {
 
 	if ('writeByte' in EmbeddedSMBus.prototype) {
 		delete SMBus.prototype.writeByte
+	}
+
+	if ('readWord' in EmbeddedSMBus.prototype) {
+		delete SMBus.prototype.readWord
+	}
+
+	if ('writeWord' in EmbeddedSMBus.prototype) {
+		delete SMBus.prototype.writeWord
+	}
+
+	if ('readBlock' in EmbeddedSMBus.prototype) {
+		delete SMBus.prototype.readBlock
+	}
+
+	if ('writeBlock' in EmbeddedSMBus.prototype) {
+		delete SMBus.prototype.writeBlock
 	}
 }
 

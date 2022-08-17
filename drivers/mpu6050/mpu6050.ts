@@ -22,13 +22,15 @@ THE SOFTWARE.
 */
 
 import Digital from 'embedded:io/digital'
-import { SMBusOptions } from 'embedded:io/smbus'
+import type EmbeddedSMBus from 'embedded:io/smbus'
 import SMBus, { type Byte, type Bit, type Bits } from 'spice/io/smbus'
 import Resource from 'Resource'
 import Timer from 'timer'
 import SystemTimer from 'spice/timer'
 
 type PartialOptions<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>
+
+type SMBusOptions = ConstructorParameters<typeof EmbeddedSMBus>[0]
 export interface GyroAccelerometerOptions extends SMBusOptions {
 
 }
@@ -266,6 +268,7 @@ class GyroAccelerometer {
 		this.fsyncInterruptEnabled = false
 		this.interruptDataReadyEnabled = false
 
+		// @ts-expect-error :  close method does not define in typings
 		this.#io.close()
 		if (this.#interruptIo) this.#interruptIo.close()
 	}
@@ -389,7 +392,7 @@ class GyroAccelerometer {
 	 * @param rate New sample rate divider
 	 */
 	set rate(rate: number) {
-		this.#io.writeByte(Register.SMPLRT_DIV, rate)
+		this.#io.writeByte(Register.SMPLRT_DIV, rate as Byte)
 	}
 
 	/**
@@ -903,14 +906,14 @@ class GyroAccelerometer {
 	}
 
 	#setMemoryStartAddress(address: number) {
-		this.#io.writeByte(Register.MEM_START_ADDR, address)
+		this.#io.writeByte(Register.MEM_START_ADDR, address as Byte)
 	}
 
 	#setMemoryBank(bank: number, prefetchEnabled = true, userBank = false) {
 		let bnk = bank & 0x1F
 		if (userBank) bnk |= 0x20
 		if (prefetchEnabled) bnk |= 0x40
-		this.#io.writeByte(Register.BANK_SEL, bnk)
+		this.#io.writeByte(Register.BANK_SEL, bnk as Byte)
 	}
 
 	#writeMemoryBlock(data: Uint8Array, bank = 0, address = 0, verify = true) {
