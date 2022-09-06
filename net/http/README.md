@@ -72,14 +72,14 @@ websockets.callback = function (message, value) {
 			break
 
 		case WebsocketsServer.receive: {
-            trace(`ws message received: ${value}\n`)
+			trace(`ws message received: ${value}\n`)
 			break
-        }
+		}
 
 		case WebsocketsServer.disconnect: {
 			trace("ws close\n")
 			break
-        }
+		}
 	}
 };
 
