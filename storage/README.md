@@ -30,3 +30,8 @@ userStorage.setItem('key', 'value')
 userStorage.getItem('key')
 userStorage.removeItem('key')
 ```
+
+Hint
+--------------------
+btw did you know [native preference class](https://github.com/Moddable-OpenSource/moddable/blob/public/documentation/files/files.md#class-preference)?  
+
