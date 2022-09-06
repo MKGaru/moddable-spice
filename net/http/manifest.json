@@ -1,0 +1,13 @@
+{
+    "include": [
+      "$(MODULES)/network/http/manifest.json"
+    ],
+    "modules": {
+      "*": [],
+      "http-server": [
+        "$(MODULES)/network/http/*",
+        "./router"
+      ]
+    }
+  }
+  
