@@ -39,7 +39,7 @@ and manifest.json (** !exclude file extension! **)
 "data": {
 	"*": [
 		"./index",
-        "./style"
+		"./style"
 	]
 }
 ```
