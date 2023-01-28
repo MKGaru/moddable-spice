@@ -1,0 +1,17 @@
+
+{
+    "build": {
+      
+    },
+    "modules": {
+      "*": [],
+  
+      "spice/drivers/display": "../../display",
+      "spice/drivers/display/epd": "../epd",
+      "spice/drivers/display/epd/ssd1680": "./ssd1680"
+    },
+    "preload": [
+      "spice/drivers/display/epd/ssd1680"
+    ]
+  }
+  
