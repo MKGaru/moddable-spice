@@ -14,6 +14,7 @@ add include to manifest.json
 ### usage
 ```javascript
 import SSD1680 from 'spice/drivers/display/epd/ssd1680'
+import { PixelFormat } from 'spice/drivers/display'
 
 const display = new SSD1680({
 	width: 122,
@@ -25,13 +26,17 @@ const display = new SSD1680({
 	select: 15,
 })
 display.configure({
+    format: PixelFormat.Monochrome,
 	rotation: 90,
 	flip: 'v',
 })
 display.begin()
 
+const image = new Resource('image.dat')
+const imageLength = image.byteLength >> 1
 display.send(
-	new Resource('image.dat')
+	image.slice(0, imageLength),
+	image.slice(imageLength)
 )
 
 display.end()

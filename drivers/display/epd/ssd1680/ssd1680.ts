@@ -53,24 +53,11 @@ export class SSD1680 extends EPD {
 		})
 	}
 	
-	send(pixels: ArrayBufferLike) {
-		if (!this._format) {
-			// [warning] not standart
-			const header = new Uint8Array(pixels, 0, 3)
-			// (wip) custom [co ff ee] format   [C0FFEE, ...bw pixels , ...red pixels] 
-			if (
-				header[0] == 0xC0 &&
-				header[1] == 0xFF &&
-				header[2] == 0xEE
-			) {
-				const length = (pixels.byteLength - 3) >> 1
-				this.#bufferColor1 = new Uint8Array(pixels, 3, length)
-				this.#bufferColor2 = new Uint8Array(pixels, 3 + length, length)
-			}
-		} else if (this._format == PixelFormat.Monochrome) {
+	send(pixels1: ArrayBufferLike, pixels2: ArrayBufferLike) {
+		if (this._format == PixelFormat.Monochrome) {
 			// not test yet.
-			this.#bufferColor1 = new Uint8Array(pixels)
-			this.#bufferColor2 = new Uint8Array(pixels.byteLength)
+			this.#bufferColor1 = new Uint8Array(pixels1)
+			this.#bufferColor2 = new Uint8Array(pixels2)
 		} else {
 			// todo: support other format
 			// @ref https://github.com/Moddable-OpenSource/moddable/blob/public/documentation/commodetto/commodetto.md#convert-class
@@ -176,9 +163,9 @@ export class SSD1680 extends EPD {
 
 	clearDisplay() {
 		this.clearBuffer()
-		this.send(new Uint8Array([]).buffer)
+		this.send(this.#bufferColor1.buffer, this.#bufferColor2.buffer)
 		Timer.delay(100)
-		this.send(new Uint8Array([]).buffer)
+		this.send(this.#bufferColor1.buffer, this.#bufferColor2.buffer)
 	}
 
 	deepSleep() {
