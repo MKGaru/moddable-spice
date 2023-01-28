@@ -1,5 +1,6 @@
 import Timer from 'timer'
 import EPD from 'spice/drivers/display/epd'
+import { PixelFormat } from 'spice/drivers/display'
 
 export class SSD1680 extends EPD {
 	#invertedColor1 = true
@@ -66,6 +67,10 @@ export class SSD1680 extends EPD {
 				this.#bufferColor1 = new Uint8Array(pixels, 3, length)
 				this.#bufferColor2 = new Uint8Array(pixels, 3 + length, length)
 			}
+		} else if (this._format == PixelFormat.Monochrome) {
+			// not test yet.
+			this.#bufferColor1 = new Uint8Array(pixels)
+			this.#bufferColor2 = new Uint8Array(pixels.byteLength)
 		} else {
 			// todo: support other format
 			// @ref https://github.com/Moddable-OpenSource/moddable/blob/public/documentation/commodetto/commodetto.md#convert-class
@@ -102,7 +107,7 @@ export class SSD1680 extends EPD {
 			)
 		})()
 
-		trace(`x:${x} y:${y} w:${w} h:${h}\n`)
+		// trace(`x:${x} y:${y} w:${w} h:${h}\n`)
 
 		// set ram-x address start/end position
 		this._writeCommand(
