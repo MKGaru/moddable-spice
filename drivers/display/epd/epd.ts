@@ -31,6 +31,8 @@ export abstract class EPD extends Display {
 		dc: PinSpecifier,
 		/** CS/SS/ChipSelect */
 		select: PinSpecifier,
+		/** SPI port */
+		port?: number,
 		/** RESET */
 		reset?: PinSpecifier,
 		/** BUSY */
@@ -63,7 +65,7 @@ export abstract class EPD extends Display {
 			select: option.select,
 			clock: typeof option.clock != 'undefined' ? option.clock : device.SPI.default.clock,
 			out: typeof option.out != 'undefined' ? option.out : device.SPI.default.out,
-			port: device.SPI.default.port,
+			port: typeof option.port != 'undefined' ? option.port : device.SPI.default.port,
 			hz: 40_000_000,
 			mode: 0,
 			active: 0,

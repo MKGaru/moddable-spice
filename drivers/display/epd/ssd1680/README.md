@@ -33,7 +33,7 @@ display.configure({
 display.begin()
 
 const image = new Resource('image.dat')
-const imageLength = image.byteLength >> 1
+const imageLength = image.byteLength / 2
 display.send(
 	image.slice(0, imageLength),
 	image.slice(imageLength)
