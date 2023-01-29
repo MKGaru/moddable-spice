@@ -48,7 +48,7 @@ export abstract class Display {
 	 * The pixels are stored in a packed array with no padding between scan lines. 
 	 * The format of the pixels matches the **format** property of the options object of the **configure** method.
 	 */
-	abstract send(...pixels: ArrayBufferLike[]): void
+	abstract send(pixels: ArrayBufferLike, ...subpixels: ArrayBufferLike[]): void
 
 	/**
 	 * The **end** method finishes the process of updating the display’s pixels, by making all pixels visible on the display. 
