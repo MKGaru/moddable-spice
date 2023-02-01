@@ -13,6 +13,7 @@ add include to manifest.json
 
 ### usage
 ```javascript
+import Resource from 'Resource'
 import SSD1680 from 'spice/drivers/display/epd/ssd1680'
 import { PixelFormat } from 'spice/drivers/display'
 
