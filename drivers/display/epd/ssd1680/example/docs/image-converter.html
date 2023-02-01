@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf8">
+	<title>ImageConverter</title>
+	<style>
+		html,body {
+			margin: 0;
+			padding: 0;
+			height: 100%;
+		}
+		body > .container {
+			display: grid;
+			grid-template:
+				"input-control   output-control" 1.75em
+				"input-preview   output-preview" 250px /
+				1fr               1fr;
+			padding: 1em;
+			height: 100%;
+			background: #ddd;
+			box-sizing: border-box;
+		}
+		body > .container figure {
+			margin: 0;
+		}
+		input#file {
+			grid-area: "input-control";
+		}
+		input#file ~ * {
+			display: none;
+		}
+		input#file.selected ~ * {
+			display: initial;
+		}
+		button#download {
+			grid-area: "output-control";
+		}
+		#input-preview {
+			grid-area: "input-preview";
+		}
+		#output-preview {
+			grid-area: "output-preview";
+		}
+	</style>
+</head>
+<body>
+	<div class="container">
+		<input id="file" type="file" accept="image/*">
+		<button id="download" type="button">Download</button>
+		<figure id="input-preview">
+			<figcaption>Input</figcaption>
+			<canvas id="canvas" width="250" height="128" ></canvas>
+		</figure>
+		<figure id="output-preview">
+			<figcaption>Output</figcaption>
+			<canvas id="preview" width="250" height="128"></canvas>
+		</figure>
+		<canvas id="export"></canvas>
+	</div>
+<script>
+(async () => {
+/** @type {HTMLCanvasElement} */
+const canvas = document.querySelector('#canvas')
+const ctx = canvas.getContext('2d')
+
+/** @type {HTMLCanvasElement} */
+const preview = document.querySelector('#preview')
+const previewCtx = preview.getContext('2d')
+
+/** @type {HTMLInputElement} */
+const input = document.querySelector('#file')
+const image = new Image()
+
+/** @type {Blob} */
+let generatedBlob = null
+
+input.addEventListener('change', async () => {
+	ctx.fillStyle = '#ffffff'
+	ctx.fillRect(0, 0, canvas.width, canvas.height)
+
+	image.src = await new Promise((res, rej) => {
+		const fr = new FileReader()
+		fr.addEventListener('load', () => {
+			res(fr.result)
+		})
+		fr.addEventListener('error', () => {
+			rej()
+		})
+		if (input.files) {
+			input.classList.add('selected')
+			fr.readAsDataURL(input.files[0])
+		} else {
+			input.classList.remove('selected')
+		}
+	})
+	image.onload = () => {
+		render()
+	}
+	
+})
+
+document.querySelector('#download').addEventListener('click', () => {
+	download(generatedBlob)
+})
+
+async function render() {
+	ctx.save()
+	ctx.translate(canvas.width / 2, canvas.height / 2)
+	if (image.naturalHeight > image.naturalWidth) {
+		const raito = image.naturalHeight / image.naturalWidth
+		ctx.rotate(-90 * Math.PI / 180)
+		ctx.drawImage(image, -canvas.height / 2, -canvas.width / 2, canvas.height, canvas.height * raito)
+	} else {
+		const raito = image.naturalHeight / image.naturalWidth
+		ctx.drawImage(image, -canvas.width / 2, -canvas.height / 2, canvas.width, canvas.width * raito)
+	}
+	
+	ctx.restore()
+
+	const srgb = ctx.getImageData(0, 0, canvas.width, canvas.height)
+
+	const bw = rgb256toMono(new Uint32Array(srgb.data.buffer))
+	const red = rgb256toMonoRed(new Uint32Array(srgb.data.buffer))
+
+	// clear canvas
+	previewCtx.fillStyle = '#ffffff'
+	previewCtx.fillRect(0, 0, canvas.width, canvas.height)
+	
+	// render black-white
+	previewCtx.fillStyle ='#000000'
+	let x = 0;
+	let y = 0;
+	for (const byte of bw) {
+		for (let i = 0; i < 8; i++) {
+			if (byte & (0b1000_0000 >> i)) previewCtx.fillRect(x, y, 1, 1)
+			x += 1
+			if (x >= canvas.width) {
+				x = 0
+				y += 1
+			}
+		}
+	}
+
+	// render red
+	previewCtx.fillStyle ='#ff0000'
+	x = 0
+	y = 0
+	for (const byte of red) {
+		for (let i = 0; i < 8; i++) {
+			if (byte & (0b1000_0000 >> i)) previewCtx.fillRect(x, y, 1, 1)
+			x += 1
+			if (x >= canvas.width) {
+				x = 0
+				y += 1
+			}
+		}
+	}
+
+	// rotation
+	{
+		/** @type {HTMLCanvasElement} */
+		const screen = document.querySelector('#export')
+		screen.style.display = 'block'
+		screen.width = canvas.height
+		screen.height = canvas.width
+		const screenContext = screen.getContext('2d')
+		const rotation = Math.PI / 2
+		screenContext.translate(screen.width / 2, screen.height /2)
+		screenContext.rotate(rotation)
+		screenContext.drawImage(await new Promise(res => {
+			const image = new Image()
+			image.onload = function() {
+				console.log(image)
+				res(image)
+			}
+			image.src = canvas.toDataURL()
+		}), -screen.height / 2 , -screen.width / 2)
+		screenContext.rotate(-rotation)
+		screenContext.translate(-screen.width / 2, -screen.height /2)
+
+		const srgb = screenContext.getImageData(0, 0, screen.width, screen.height)
+
+		const bw = rgb256toMono(new Uint32Array(srgb.data.buffer))
+		const red = rgb256toMonoRed(new Uint32Array(srgb.data.buffer))
+		generatedBlob = new Blob([bw, red], {type: 'application/octet-stream'})
+		screen.style.display = 'none'
+	}
+}
+
+/** 
+ * @return {Promise<ArrayBuffer>} File's binary data 
+ */
+function loadImageBuffer() {
+	return new Promise((res,rej) => {
+		const input = document.createElement('input')
+		input.type = 'file'
+		input.accept = 'image/bmp'
+		input.addEventListener('change', () => {
+			if (input.files.length) {
+				const fr = new FileReader()
+				fr.addEventListener('load', () => {
+					res(fr.result)
+				})
+				fr.addEventListener('error', () => {
+					rej()
+				})
+				fr.addEventListener('loadend', () => {
+					document.body.removeChild(input)
+				})
+				fr.readAsArrayBuffer(input.files[0])
+			} else {
+				document.body.removeChild(input)
+				rej()
+			}
+		})
+		document.body.appendChild(input)
+		input.click()
+	})
+}
+
+/**
+ * @param {ArrayBuffer} buffer 256colors bitmap data
+ * @return {Uint32Array} 8bitRed, 8bitGreen, 8bitGreen, 8bitZero : 32bitRGB0Data
+ */ 
+function bmp256toRGB8(buffer) {
+	const view = new DataView(buffer)
+	const header = {
+	    isBitmap: view.getUint16(0, false) == 0x0_42_4d,
+	    fileSize: view.getUint32(2, true),
+	    headerSize: view.getUint32(10, true),
+	    width: view.getUint32(18, true),
+	    height: view.getUint32(22, true),
+	    colors: view.getUint16(28, true),
+	    compress: view.getUint32(30, true),
+	}
+	if (!header.isBitmap || header.colors != 8) throw new Error('this file is not 256colors bmp')
+	const pallet = new Uint32Array(256)
+	const palletView = new DataView(pallet.buffer)
+	for (let i = 0; i < 256; i++) {
+	    const r = view.getUint8(54 + i * 4 + 0)
+	    const g = view.getUint8(54 + i * 4 + 1)
+	    const b = view.getUint8(54 + i * 4 + 2)
+	    palletView.setUint32(i * 4, r << 24 | g << 16 | b << 8, false)
+	}
+	const pixels = new Uint32Array(header.width * header.height)
+	// Bitmapの幅は4の倍数の仕様がある、余白は無視する。
+	const ignoreWidth = (4 - (header.width % 4)) % 4
+	let rowCount = 0
+	for (let i = 0; i < pixels.length; i++) {
+		const color = pallet.at(view.getUint8(header.headerSize + i * header.colors / 8))
+		pixels.set([color], i - ignoreWidth * rowCount)
+		if (i && (i % (header.width + ignoreWidth) == 0)) rowCount++
+	}
+	return pixels
+}
+
+/**
+ * @param {Uint32Array} buffer 32bit RGB0 Data
+ * @return {Uint8Array} 8bit Monochrome data
+ */
+function rgb256toMonoRed(buffer) {
+	const data = new Uint8Array(Math.ceil(buffer.length / 8))
+	for (let i = 0; i < buffer.length; i+= 8) {
+		let byte = 0
+		for (let n = 0; n < 8; n++) {
+			const value = buffer.at(i + n)
+			const r = value & 0xFF
+			const g = (value >> 8) & 0xFF
+			const b = (value >> 16) & 0xFF
+			
+			byte |= (r > 0x7F && g < 0x7F && b < 0x7F) << (7 - n)
+		}
+		data.set([byte], i / 8)
+	}
+	return data
+}
+
+/**
+ * @param {Uint32Array} buffer 32bit RGB0 Data
+ * @return {Uint8Array} 8bit Monochrome data
+ */ 
+function rgb256toMono(buffer) {
+	const data = new Uint8Array(Math.ceil(buffer.length / 8))
+	for (let i = 0; i < buffer.length; i+= 8) {
+		let byte = 0
+		for (let n = 0; n < 8; n++) {
+			const value = buffer.at(i + n)
+			const r = value & 0xFF
+			const g = (value >> 8) & 0xFF
+			const b = (value >> 16) & 0xFF
+			byte |= (r < 0x7F && g < 0x7F && b < 0x7F) << (7 - n)
+		}
+		data.set([byte], i / 8)
+	}
+	return data
+}
+
+
+/**
+ * @param {Blob} blob
+ * @return {void}
+ */
+function download(blob) {
+	const a = document.createElement('a')
+	a.download = 'image.dat'
+	a.href = URL.createObjectURL(blob)
+	document.body.appendChild(a)
+	a.click()
+	setTimeout(() => {
+		document.body.removeChild(a)
+		URL.revokeObjectURL(a.src)
+	}, 1000)
+}
+})()
+</script>
+</body>
+</html>
