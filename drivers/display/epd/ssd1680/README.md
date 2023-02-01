@@ -26,7 +26,7 @@ const display = new SSD1680({
 	select: 15,
 })
 display.configure({
-    format: PixelFormat.Monochrome,
+	format: PixelFormat.Monochrome,
 	rotation: 90,
 	flip: 'v',
 })
