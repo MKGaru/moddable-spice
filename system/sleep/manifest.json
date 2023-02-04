@@ -1,0 +1,33 @@
+{
+    "modules": {
+        "spice/system/sleep": "./sleep"
+    },
+    "preload": [
+        "spice/system/sleep"
+    ],
+    "platforms": {
+        "esp32": {
+            "modules": {
+                "*": "./esp32/*"
+            }
+        },
+        "...": {
+			"error": "Sleep module unsupported"
+		}
+    },
+    "typescript": {
+        "tsconfig": {
+            "compilerOptions": {
+                "paths": {
+                    "spice/system/sleep": [
+                        "$(MODDABLE)/../spice/system/sleep"
+                    ]
+                },
+                "types": [
+                    "$(MODDABLE)/../spice/system/sleep/typings/sleep"
+                ]
+            }
+        }
+    }
+}
+  
