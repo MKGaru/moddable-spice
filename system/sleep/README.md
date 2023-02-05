@@ -28,7 +28,7 @@ Sleep.light()
 // light sleep with wakeup timer (msec)
 Sleep.light(msec: number)
 
-// wakeup on gpio
+// wakeup on gpio (shee: https://lastminuteengineers.com/esp32-pinout-reference/#esp32-rtc-gpio-pins)
 Sleep.enableExt0Wakeup(pin: number, level: 0|1)
 
 // wakeup on gpio
