@@ -91,12 +91,6 @@ export class Sleep {
 	// static setIdleSleepLevel(level) @ "xs_sleep_set_idle_sleep_level"
 }
 
-Sleep.WakeupExt0 = 2
-Sleep.WakeupExt1 = 3
-Sleep.WakeupTimer = 4
-Sleep.WakeupTouchpad = 5
-Sleep.WakeupULP = 6
-
 /* Do not call Object.freeze on Sleep.prototype */
 
 export default Sleep

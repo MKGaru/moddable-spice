@@ -61,3 +61,9 @@ Sleep.deep(10 * 1000)
 // deep sleep will restart after wakeup.
 trace('never execute')
 ```
+
+
+refs
+------------------
+* [moddable/modules/io/system](https://github.com/Moddable-OpenSource/moddable/blob/public/modules/io/system/) for esp8266
+* [moddable/modules/base/sleep](https://github.com/Moddable-OpenSource/moddable/tree/public/modules/base/sleep/) for gecko
