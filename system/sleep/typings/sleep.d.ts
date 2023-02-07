@@ -8,6 +8,18 @@ declare module "spice/system/sleep" {
 		WakeupULP = 6,
 	}
 
+	export enum SleepPdDomain {
+		RTCPeriph = 0,
+		RTCSlowMem =  1,
+		RTCFastMem = 2,
+	}
+
+	export enum SleepPdOption {
+		OFF = 1,
+		ON = 2,
+		AUTO = 3,
+	}
+
 	export class Sleep {
 		/** sleep time */
 		static deep(ms: number): never
@@ -16,17 +28,26 @@ declare module "spice/system/sleep" {
 		static light(ms: number): void
 
 		/**
+		 * Enable wakeup using a pin
 		 * @see https://lastminuteengineers.com/esp32-pinout-reference/#esp32-rtc-gpio-pins for ESP32
 		 * @param pin rtc-gpio pin
 		 * @param level 
 		 */
 		static enableExt0Wakeup(pin: number, level: 0|1): void
 		/**
-		 * @see https://lastminuteengineers.com/esp32-pinout-reference/#esp32-rtc-gpio-pins for ESP32
-		 * @param pin rtc-gpio pin
-		 * @param level 
+		 * Enable wakeup using multiple pins
+		 * @see https://lastminuteengineers.com/esp32-deep-sleep-wakeup-sources/#ext1-external-wakeup-source for ESP32
+		 * @param bitmask rtc-gpio pin
+		 * @param mode {0|1} 0: All Low,  1: Any High
 		 */
-		static enableExt1Wakeup(pin: number, level: 0|1): void
+		static enableExt1Wakeup(bitmask: number, mode: 0|1): void
+
+		/**
+		 * Set power down mode for an RTC power domain in sleep mode
+		 * @param domain power domain to configure
+		 * @param option power down option
+		 */
+		static setSleepPdConfig(domain: SleepPdDomain, option: SleepPdOption): void
 
 		static getWakeupCause(): WakeupCause
 
