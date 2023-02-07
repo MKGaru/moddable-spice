@@ -25,7 +25,7 @@ void xs_enable_ext0_wakeup(xsMachine * the)
 void xs_enable_ext1_wakeup(xsMachine * the)
 {
 	if (xsToInteger(xsArgc) == 2) {
-		esp_sleep_enable_ext1_wakeup(xsToInteger(xsArg(0)), xsToInteger(xsArg(1)));
+		esp_sleep_enable_ext1_wakeup(xsToInteger(xsArg(0)), (esp_sleep_ext1_wakeup_mode_t)xsToInteger(xsArg(1)));
 	}
 }
 
@@ -35,6 +35,21 @@ void xs_sleep_get_reset_cause(xsMachine * the)
 	wakeup_reason = esp_sleep_get_wakeup_cause();
 
 	xsResult = xsInteger(wakeup_reason);
+}
+
+void xs_set_pd_config(xsMachine * the)
+{
+	if (xsToInteger(xsArgc) == 2) {
+		esp_err_t result = esp_sleep_pd_config(
+			(esp_sleep_pd_domain_t)xsToInteger(xsArg(0)), 
+			(esp_sleep_pd_option_t)xsToInteger(xsArg(1))
+		);
+		if (result != ESP_OK) {
+			xsSyntaxError("err: %d", result);
+		}
+	} else {
+		xsSyntaxError("invalid arg");
+	}
 }
 
 void xs_get_status(xsMachine * the)

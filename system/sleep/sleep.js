@@ -18,15 +18,30 @@
  *
  */
 
-export const WakeupCause = {
+export const WakeupCause = /** @type {const} */({
 	unknown: 0,
 	WakeupExt0: 2,
 	WakeupExt1: 3,
 	WakeupTimer: 4,
 	WakeupTouchpad: 5,
 	WakeupULP: 6,
-}
+})
 Object.freeze(WakeupCause)
+
+export const SleepPdDomain = /** @type {const} */({
+	RTCPeriph: 0,
+	RTCSlowMem: 1,
+	RTCFastMem: 2,
+	max: 3,
+})
+Object.freeze(SleepPdDomain)
+
+export const SleepPdOption = /** @type {const} */({
+	OFF: 1,
+	ON: 2,
+	AUTO: 3,
+})
+Object.freeze(SleepPdOption)
 
 /** @type {Array<Function>} */
 const handlers = []
@@ -83,7 +98,11 @@ export class Sleep {
 	 */
 	static enableExt1Wakeup(pin, level) @ "xs_enable_ext1_wakeup"
 	
-
+	/**
+	 * @param {Number} domain
+	 * @param {Number} option
+	 */
+	static setSleepPdConfig(domain, option) @ "xs_set_pd_config"
 	
 	// static getWakeupPin() @ "xs_sleep_get_wakeup_pin"
 
