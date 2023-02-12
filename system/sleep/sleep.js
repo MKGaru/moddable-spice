@@ -37,32 +37,18 @@ export const SleepPdDomain = /** @type {const} */({
 Object.freeze(SleepPdDomain)
 
 export const SleepPdOption = /** @type {const} */({
-	OFF: 1,
-	ON: 2,
-	AUTO: 3,
+	OFF: 0,
+	ON: 1,
+	AUTO: 2,
 })
 Object.freeze(SleepPdOption)
 
-/** @type {Array<Function>} */
-const handlers = []
-
 export class Sleep {
-	get handlers() { return handlers }
-
-	/** @param {Function} handler */
-	static install(handler) {
-		// this dance allows handlers to be installed both at preload and run time
-		if (Object.isFrozen(Sleep.prototype.handlers))
-			Sleep.prototype.handlers = Array.from(Sleep.prototype.handlers)
-		Sleep.prototype.handlers.push(handler)
-	}
-
 	// static getPersistentValue(index) @ "xs_get_persistent_value"
 	// static setPersistentValue(index, value) @ "xs_set_persistent_value"
 
 	/** @param {Number} ms sleep time */
 	static deep(ms) {
-		Sleep.prototype.handlers.forEach(handler => (handler)())
 		this.doDeepSleep(ms)
 	}
 
@@ -110,6 +96,6 @@ export class Sleep {
 	// static setIdleSleepLevel(level) @ "xs_sleep_set_idle_sleep_level"
 }
 
-/* Do not call Object.freeze on Sleep.prototype */
-
+Object.freeze(Sleep)
+Object.freeze(Sleep.prototype)
 export default Sleep

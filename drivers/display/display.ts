@@ -10,6 +10,7 @@ export enum PixelFormat {
     CLUT16 = 11,
     ARGB4444 = 12,
 }
+Object.freeze(PixelFormat)
 
 export interface DisplayOption {
 	/** A number indicating the format of pixel data passed to the instance (for example, to the **send** method). 

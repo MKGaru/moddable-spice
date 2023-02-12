@@ -15,9 +15,9 @@ declare module "spice/system/sleep" {
 	}
 
 	export enum SleepPdOption {
-		OFF = 1,
-		ON = 2,
-		AUTO = 3,
+		OFF = 0,
+		ON = 1,
+		AUTO = 2,
 	}
 
 	export class Sleep {
